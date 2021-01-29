@@ -131,9 +131,9 @@ jobs:
              --query 'Reservations[*].Instances[*].PublicIpAddress' \
              --output text >> .circleci/ansible/inventory.txt
       - persist_to_workspace:
-          root: .circleci/ansible
+          root: ~/
           paths:
-            - .circleci/ansible/inventory.txt
+            - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure
 
   configure-infrastructure:
@@ -148,17 +148,18 @@ jobs:
           fingerprints: ["53:f2:da:9a:3b:e7:a0:a7:01:54:10:53:20:84:00:9d"]
       # attach workspace
       - attach_workspace:
-        at: /tmp/.circleci/ansible
+        at: ~/
       - run:
           name: Install dependencies
           command: |
-            # Your code here
+            apk add tar
+            apk add gzip
             apk add --update ansible
       - run:
           name: Configure server
           command: |
             # Your code here
-            ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
       # Here's where you will add some code to rollback on failure         
 
         
