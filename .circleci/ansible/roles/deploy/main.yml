@@ -6,12 +6,6 @@
     src: ~/project/backend.tar.gz
     dest: /home/ubuntu
 
-- name: run migration
-  become: yes
-  shell: |
-    cd /home/ubuntu/backend
-    npm run migrations
-
 - name: start pm2
   become: yes
   shell: |
