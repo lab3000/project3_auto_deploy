@@ -153,7 +153,8 @@ jobs:
       - run:
           name: Configure server
           command: |
-            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
+            cat project/.circleci/ansible/inventory.txt
+            ansible-playbook -i project/.circleci/ansible/inventory.txt project/.circleci/ansible/configure-server.yml
       # Here's where you will add some code to rollback on failure
 
   run-migrations:
@@ -166,8 +167,10 @@ jobs:
           command: |
             cd backend
             npm install
+            npm run build
             npm audit --audit-level=critical --force
-            npm run migrations >> migrations.txt
+            npm run migrations > migrations.txt
+            cat migrations.txt
       - run:
           name: Send migration results to memstash
           command: |
