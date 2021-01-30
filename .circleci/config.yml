@@ -100,6 +100,9 @@ jobs:
           command: |
             cd backend
             npm audit fix --audit-level=critical --force
+      - save_cache:
+          paths: [backend/node_modules]
+          key: scanned-backend-build
   
   deploy-infrastructure:
     docker:
@@ -162,13 +165,12 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: [scanned-backend-build]
       - run:
           name: Run migrations
           command: |
             cd backend
-            npm install
-            npm run build
-            npm audit --audit-level=critical --force
             npm run migrations > migrations.txt
             cat migrations.txt
       - run:
