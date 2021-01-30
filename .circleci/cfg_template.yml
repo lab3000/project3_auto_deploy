@@ -204,26 +204,7 @@ jobs:
           name: Deploy backend
           command: |
             # your code here
-      # Here's where you will add some code to rollback on failure
-
-  deploy-backend:
-    docker:
-      - image: python:3.7-alpine3.11
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["53:f2:da:9a:3b:e7:a0:a7:01:54:10:53:20:84:00:9d"]
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Install dependencies
-          command: |
-            # your code here
-      - run:
-          name: Deploy backend
-          command: |
-            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
-      # Here's where you will add some code to rollback on failure    
+      # Here's where you will add some code to rollback on failure  
 
   smoke-test:
     docker:

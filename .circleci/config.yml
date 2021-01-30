@@ -148,9 +148,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add tar
-            apk add gzip
-            apk add --update ansible
+            apk add --update ansible tar gzip
       - run:
           name: Configure server
           command: |
@@ -205,9 +203,34 @@ jobs:
             cd frontend
             npm install
             npm run build
-            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            for dir in */; do
+              echo "$dir"
+            done
+            cd dist
+            for dir in */; do
+              echo "$dir"
+            done
             aws s3 sync ./dist s3://udapeople-"${CIRCLE_WORKFLOW_ID:0:7}"
       # Here's where you will add some code to rollback on failure 
+  
+  deploy-backend:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["53:f2:da:9a:3b:e7:a0:a7:01:54:10:53:20:84:00:9d"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible tar gzip
+      - run:
+          name: Deploy backend
+          command: |
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
+      # Here's where you will add some code to rollback on failure  
 
                      
 workflows:
