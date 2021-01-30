@@ -182,9 +182,9 @@ jobs:
 
   deploy-frontend:
     docker:
-      # Docker image here that supports AWS CLI
+      - image: amazon/aws-cli
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Install dependencies
           command: |
@@ -206,8 +206,9 @@ jobs:
             npm install
             npm run build
             aws s3 sync ./dist s3://udapeople-"${CIRCLE_WORKFLOW_ID:0:7}"
-      # Here's where you will add some code to rollback on failure             
-       
+      # Here's where you will add some code to rollback on failure 
+
+                     
 workflows:
   default:
     jobs:
