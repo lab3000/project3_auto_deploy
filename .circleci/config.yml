@@ -100,9 +100,6 @@ jobs:
           command: |
             cd backend
             npm audit fix --audit-level=critical --force
-      - save_cache:
-          paths: [backend/node_modules]
-          key: scanned-backend-build
   
   deploy-infrastructure:
     docker:
@@ -165,8 +162,8 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [scanned-backend-build]
+      - add_ssh_keys:
+          fingerprints: ["56:75:33:ca:45:b4:44:30:c9:2d:e5:5c:d0:3e:39:2b"]
       - run:
           name: Run migrations
           command: |
@@ -185,6 +182,7 @@ jobs:
             npm install
             npm run migrations > migrations.txt
             cat migrations.txt
+            aws s3 cp migrations.txt s3://udapeople-gemlcj9dt2p49xv
       - run:
           name: Send migration results to memstash
           command: |
