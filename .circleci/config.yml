@@ -148,7 +148,6 @@ jobs:
           at: ~/
       - run:
           name: installation of pip and aws cli
-          # Add when this will run
           command: |
             apk add --no-cache \
             python3 \
@@ -189,7 +188,6 @@ jobs:
           fingerprints: ["56:75:33:ca:45:b4:44:30:c9:2d:e5:5c:d0:3e:39:2b"]
       - run:
           name: installation of pip and aws cli
-          # Add when this will run
           command: |
             apk add --no-cache \
             python3 \
@@ -197,7 +195,6 @@ jobs:
             && pip3 install --upgrade pip \
             && pip3 install \
             awscli \
-            && rm -rf /var/cache/apk/*
       - run:
           name: Run migrations
           command: |
