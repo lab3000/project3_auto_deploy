@@ -143,21 +143,15 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["53:f2:da:9a:3b:e7:a0:a7:01:54:10:53:20:84:00:9d"]
+          fingerprints: 
+            - "53:f2:da:9a:3b:e7:a0:a7:01:54:10:53:20:84:00:9d"
+            - "56:75:33:ca:45:b4:44:30:c9:2d:e5:5c:d0:3e:39:2b"
       - attach_workspace:
           at: ~/
       - run:
-          name: installation of pip and aws cli
-          command: |
-            apk add --no-cache \
-            python3 \
-            py3-pip \
-            && pip3 install --upgrade pip \
-            && pip3 install \
-            awscli \
-      - run:
           name: create env file in backend folder
           command: |
+            pip install awscli
             echo ENVIROMENT=production >> "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> "backend/.env"
             echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
@@ -168,6 +162,7 @@ jobs:
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
+            aws s3 cp backend/.env s3://udapeople-gemlcj9dt2p49xv
       - run:
           name: Install dependencies
           command: |
@@ -187,15 +182,6 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["56:75:33:ca:45:b4:44:30:c9:2d:e5:5c:d0:3e:39:2b"]
       - run:
-          name: installation of pip and aws cli
-          command: |
-            apk add --no-cache \
-            python3 \
-            py3-pip \
-            && pip3 install --upgrade pip \
-            && pip3 install \
-            awscli \
-      - run:
           name: Run migrations
           command: |
             echo ENVIROMENT=production >> "backend/.env"
@@ -208,8 +194,6 @@ jobs:
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
-            cat backend/.env
-            aws s3 cp migrations.txt s3://udapeople-gemlcj9dt2p49xv
             cd backend
             npm install
             npm run migrations > migrations.txt
