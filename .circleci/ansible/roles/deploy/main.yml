@@ -3,7 +3,7 @@
 - name: transfer and unarchive backend
   become: true
   unarchive:
-    src: ~/project/backend.tar.gz
+    src: /root/project/backend.tar.gz
     dest: /home/ubuntu
 
 - name: start pm2
