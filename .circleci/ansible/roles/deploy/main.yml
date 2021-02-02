@@ -1,13 +1,13 @@
 
 ---
 - name: transfer and unarchive backend
-  become: yes
+  become: true
   unarchive:
     src: ~/project/backend.tar.gz
     dest: /home/ubuntu
 
 - name: start pm2
-  become: yes
+  become: true
   shell: |
     cd /home/ubuntu/backend
     pm2 start --name "backend" npm -- start
