@@ -165,6 +165,8 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd backend
             ls -a
+            cd ..
+            ls -a
       - persist_to_workspace:
           root: ~/
           paths:
