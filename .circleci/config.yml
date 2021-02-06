@@ -245,7 +245,7 @@ jobs:
             echo "${API_URL}"
             curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" \
               --request PUT \
-              --data "${API_URL}" https://api.memstash.io/values/backend_url_${CIRCLE_WORKFLOW_ID:0:7}
+              --data "${BACKEND_IP}" https://api.memstash.io/values/backend_ip_${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Deploy frontend objects
           command: |
@@ -285,18 +285,13 @@ jobs:
           command: |
             apk add --update curl
       - run:
-          name: Get backend url
+          name: Backend smoke test
           command: |
-            BACKEND_URL=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET "https://api.memstash.io/values/backend_url_${CIRCLE_WORKFLOW_ID:0:7}")
-            echo $BACKEND_URL
-            curl "http://${BACKEND_URL}:3030/api/status"
+            BACKEND_IP=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET "https://api.memstash.io/values/backend_url_${CIRCLE_WORKFLOW_ID:0:7}")
+            echo $BACKEND_IP
+            curl "http://${BACKEND_IP}:3030/api/status"
       - run:
-          name: Backend smoke test.
-          command: |
-            echo $BACKEND_URL
-            curl $BACKEND_URL
-      - run:
-          name: Frontend smoke test.
+          name: Frontend smoke test
           command: |
             URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com"
             if curl -s ${URL} | grep "Welcome"
