@@ -145,6 +145,8 @@ jobs:
       - add_ssh_keys:
           fingerprints: 
             - "53:f2:da:9a:3b:e7:a0:a7:01:54:10:53:20:84:00:9d"
+      - restore_cache:
+          keys: [backend-build]
       - attach_workspace:
           at: ~/
       - run:
@@ -165,17 +167,25 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             echo "here 2"
             ls -a backend
+      
       - persist_to_workspace:
           root: ~/
           paths:
             - project/backend/.env
+
+      - run:
+          name: compress backend
+          command: |
+            tar -C project/backend -czvf backend.tar.gz .
+
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible tar gzip
+            apk update
+            apk add --update ansible tar gzip aws-cli openssh-client
             ansible-galaxy install weareinteractive.environment
       - run:
-          name: Configure server
+          name: Configure server and deploy backend
           command: |
             export ANSIBLE_HOST_KEY_CHECKING=False
             cat .circleci/ansible/inventory.txt
