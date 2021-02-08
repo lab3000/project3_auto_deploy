@@ -38,7 +38,21 @@
 - name: "copy backend build"
   become: yes
   unarchive:
-    src: /root/project/backend.tar.gz
+    src: /tmp/workspace/backend.tar.gz
+    dest: /home/ubuntu/backend/
+    owner: ubuntu
+
+- name: "copy backend package.json"
+  become: yes
+  copy:
+    src: /tmp/workspace/package.json
+    dest: /home/ubuntu/backend/
+    owner: ubuntu
+
+- name: "copy .env from circleci server to ec2"
+  become: true
+  copy:
+    src: /root/project/backend/.env
     dest: /home/ubuntu/backend/
     owner: ubuntu
 
@@ -47,9 +61,14 @@
     cd /home/ubuntu/backend
     npm i
 
-- name: Executing node
-  become: true
+- name: "configure pm2 start as service"
+  become: yes
   shell: |
-    cd /home/ubuntu/backend
-    pm2 start npm --name backend -- start
-    pm2 ls
+    env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
+
+- name: "start backend with pm2"
+  become: yes
+  shell: |    
+    pm2 start main.js --name backend
+  args:
+    chdir: /home/ubuntu/backend

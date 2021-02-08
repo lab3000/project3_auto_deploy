@@ -27,7 +27,7 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - run:
-          name: Back-end build
+          name: build backend
           command: |
              # Your code here
              cd backend
@@ -36,6 +36,18 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+      - run:
+          name: Copy compiled backend for future use in ansible
+          command: |
+            mkdir /tmp/workspace
+            cp ./backend/package.json /tmp/workspace/
+            cd backend/dist
+            tar -zcvf /tmp/workspace/backend.tar.gz ./
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - backend.tar.gz
+            - package.json
 
   test-frontend:
     docker:
@@ -148,7 +160,7 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - attach_workspace:
-          at: ~/
+          at: /tmp/workspace
       - run:
           name: create env file in backend folder
           command: |
@@ -174,22 +186,19 @@ jobs:
             - project/backend/.env
 
       - run:
-          name: compress backend
-          command: |
-            tar -C backend -czvf backend.tar.gz .
-
-      - run:
           name: Install dependencies
           command: |
             apk update
             apk add --update ansible tar gzip
             ansible-galaxy install weareinteractive.environment
+
       - run:
           name: Configure server and deploy backend
           command: |
             export ANSIBLE_HOST_KEY_CHECKING=False
             cat .circleci/ansible/inventory.txt
             ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/playbook.yml
+ 
       # Here's where you will add some code to rollback on failure
 
   run-migrations:
