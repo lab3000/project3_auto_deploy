@@ -182,7 +182,7 @@ jobs:
           name: Install dependencies
           command: |
             apk update
-            apk add --update ansible tar gzip aws-cli openssh-client
+            apk add --update ansible tar gzip
             ansible-galaxy install weareinteractive.environment
       - run:
           name: Configure server and deploy backend
