@@ -176,7 +176,7 @@ jobs:
       - run:
           name: compress backend
           command: |
-            tar -C project/backend -czvf backend.tar.gz .
+            tar -C backend -czvf backend.tar.gz .
 
       - run:
           name: Install dependencies
