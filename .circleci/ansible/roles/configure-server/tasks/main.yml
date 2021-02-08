@@ -29,37 +29,39 @@
     production: yes
     state: present
 
-- name: "create web folder"
+- name: "create backend folder"
   become: yes
   file:
-    path: /home/ubuntu/web
+    path: /home/ubuntu/backend
     state: directory
 
 - name: "copy backend build"
   become: yes
   unarchive:
-    src: /tmp/workspace/backend.tar.gz
-    dest: /home/ubuntu/web/
+    src: /root/project/backend.tar.gz
+    dest: /home/ubuntu/backend/
     owner: ubuntu
 
 - name: "copy backend package.json"
   become: yes
   copy:
-    src: /tmp/workspace/package.json
-    dest: /home/ubuntu/web/
+    src: /root/project/package.json
+    dest: /home/ubuntu/backend/
     owner: ubuntu
 
 - name: "install npm dependencies"
   shell: |
-    cd /home/ubuntu/web
+    cd /home/ubuntu/backend
     npm i
+
 - name: "configure pm2 start as service"
   become: yes
   shell: |
     env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
+    
 - name: "start backend with pm2"
   become: yes
   shell: |    
     pm2 start main.js --name backend
   args:
-    chdir: /home/ubuntu/web
+    chdir: /home/ubuntu/backend
