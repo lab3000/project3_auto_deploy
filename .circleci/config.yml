@@ -137,7 +137,7 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure
 
-  configure-infrastructure:
+  configure-infrastructure-and-deploy-backend:
     docker:
       - image: python:3.7-alpine3.11
     steps:
@@ -172,11 +172,12 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible tar gzip
+            ansible-galaxy install weareinteractive.environment
       - run:
           name: Configure server
           command: |
             cat .circleci/ansible/inventory.txt
-            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/playbook.yml
       # Here's where you will add some code to rollback on failure
 
   run-migrations:
@@ -254,30 +255,7 @@ jobs:
             npm audit fix
             npm run build
             aws s3 sync dist s3://udapeople-"${CIRCLE_WORKFLOW_ID:0:7}" --delete
-      # Here's where you will add some code to rollback on failure 
-  
-  deploy-backend:
-    docker:
-      - image: python:3.7-alpine3.11
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["53:f2:da:9a:3b:e7:a0:a7:01:54:10:53:20:84:00:9d"]
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible tar gzip curl
-            pip3 install awscli
-      - run:
-          name: Deploy backend
-          command: |
-            tar -C backend -czvf artifact.tar.gz .
-            cat .circleci/ansible/inventory.txt
-            export ANSIBLE_HOST_KEY_CHECKING=False
-            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
-      # Here's where you will add some code to rollback on failure  
+      # Here's where you will add some code to rollback on failure   
 
   smoke-test:
     docker:
