@@ -108,7 +108,7 @@ jobs:
           keys: [backend-build]
       # Your job code here
       - run:
-          name: Back-end test
+          name: backend test
           command: |
             cd backend
             npm audit fix --audit-level=critical --force
