@@ -114,10 +114,11 @@ jobs:
             npm audit fix --audit-level=critical --force
   
   deploy-infrastructure:
-    docker:
-      - image: amazon/aws-cli
+    executor: aws-cli/default
     steps:
       - checkout
+      - aws-cli/setup:
+          profile-name: default
       - attach_workspace:
           at: /tmp/workspace
       - run: yum -y install tar gzip
@@ -150,6 +151,11 @@ jobs:
           root: /tmp/workspace
           paths:
             - inventory.txt
+      - run:
+          name: describe events on failure
+          command: |
+            aws cloudformation describe-stack-events --stack-name "backend-${CIRCLE_WORKFLOW_ID:0:7}"
+          when: on_fail
       # Here's where you will add some code to rollback on failure
 
   configure-infrastructure-and-deploy-backend:
