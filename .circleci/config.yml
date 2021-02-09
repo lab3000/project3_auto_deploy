@@ -114,11 +114,10 @@ jobs:
             npm audit fix --audit-level=critical --force
   
   deploy-infrastructure:
-    executor: aws-cli/default
+    docker:
+      - image: amazon/aws-cli
     steps:
       - checkout
-      - aws-cli/setup:
-          profile-name: default
       - attach_workspace:
           at: /tmp/workspace
       - run: yum -y install tar gzip
