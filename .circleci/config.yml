@@ -202,6 +202,10 @@ jobs:
           name: Configure server and deploy backend
           command: |
             export ANSIBLE_HOST_KEY_CHECKING=False
+            echo "here 3"
+            ls -a 
+            cd tmp/workspace/
+            ls -a
             cat tmp/workspace/inventory.txt
             ansible-playbook -i tmp/workspace/inventory.txt .circleci/ansible/playbook.yml
  
