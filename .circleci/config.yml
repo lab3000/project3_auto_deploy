@@ -173,6 +173,7 @@ jobs:
             apk add --update ansible tar gzip
             ansible-galaxy install weareinteractive.environment
             ls -a /tmp/workspace
+            cat /tmp/workspace/inventory.txt
             echo "$(pwd)"
             ls -a
             echo "here 1"
@@ -190,8 +191,8 @@ jobs:
             ls -a backend
 
             export ANSIBLE_HOST_KEY_CHECKING=False
-            cat tmp/workspace/inventory.txt
-            ansible-playbook -i tmp/workspace/inventory.txt .circleci/ansible/playbook.yml
+            cat /tmp/workspace/inventory.txt
+            ansible-playbook -i /tmp/workspace/inventory.txt .circleci/ansible/playbook.yml
             
  
       # Here's where you will add some code to rollback on failure
