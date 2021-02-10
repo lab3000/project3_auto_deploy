@@ -185,11 +185,6 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             echo "here 2"
             ls -a backend
-      
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/backend/.env
 
       - run:
           name: Install dependencies
