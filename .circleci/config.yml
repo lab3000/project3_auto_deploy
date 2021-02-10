@@ -167,8 +167,11 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run:
-          name: create env file in backend folder
+          name: configure server and deploy backend
           command: |
+            apk update
+            apk add --update ansible tar gzip
+            ansible-galaxy install weareinteractive.environment
             ls -a /tmp/workspace
             echo "$(pwd)"
             ls -a
@@ -186,27 +189,10 @@ jobs:
             echo "here 2"
             ls -a backend
 
-      - run:
-          name: Install dependencies
-          command: |
-            apk update
-            apk add --update ansible tar gzip
-            ansible-galaxy install weareinteractive.environment
-
-      - attach_workspace:
-          at: /tmp/workspace
-
-      - run:
-          name: Configure server and deploy backend
-          command: |
             export ANSIBLE_HOST_KEY_CHECKING=False
-            ls -a backend
-            echo "here 3"
-            ls -a 
-            cd tmp/workspace/
-            ls -a
             cat tmp/workspace/inventory.txt
             ansible-playbook -i tmp/workspace/inventory.txt .circleci/ansible/playbook.yml
+            
  
       # Here's where you will add some code to rollback on failure
 
