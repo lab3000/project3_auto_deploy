@@ -198,10 +198,14 @@ jobs:
             apk add --update ansible tar gzip
             ansible-galaxy install weareinteractive.environment
 
+      - attach_workspace:
+          at: /tmp/workspace
+
       - run:
           name: Configure server and deploy backend
           command: |
             export ANSIBLE_HOST_KEY_CHECKING=False
+            ls -a backend
             echo "here 3"
             ls -a 
             cd tmp/workspace/
