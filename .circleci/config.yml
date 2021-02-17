@@ -1,5 +1,55 @@
 version: 2.1
-            
+
+commands:
+  destroy-environment:
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.  
+    steps:
+      - run:
+          name: Install AWS CLI if not Exist
+          when: on_fail
+          command: |
+            if ! [ -x "$(command -v aws)" ]; then
+            pip install awscli
+            else
+            echo "AWS CLI already installed"
+            fi
+      - run:
+          name: destroy S3 buckets
+          when: on_fail
+          command: |
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
+      - run:
+          name: destroy backend
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
+      - run:
+          name: destroy frontend
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
+      - run:
+          name: Destroy Promotion Stack
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name udapeople-cloudfront
+
+  revert-migrations:
+    description: Revert the last migration if successfully run in the current workflow.  
+    steps:
+      - run:
+          name: Revert migrations
+          when: on_fail
+          command: |
+            success_migration=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7})
+            if((${success_migration}==1)); 
+            then
+              cd ~/project/backend
+              npm install
+              npm run migrations:revert
+            fi
+
 jobs:
   build-frontend:
     docker:
@@ -293,7 +343,7 @@ jobs:
           name: Frontend smoke test
           command: |
             URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com"
-            if curl -s ${URL} | grep "Welcom"
+            if curl -s ${URL} | grep "SMOKE EXAMPLE"
             then
               return 0
             else
