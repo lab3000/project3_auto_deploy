@@ -9,9 +9,14 @@ commands:
           when: on_fail
           command: |
             if ! [ -x "$(command -v aws)" ]; then
-            pip install awscli
+            apk add --no-cache \
+                python3 \
+                py3-pip \
+            && pip3 install --upgrade pip \
+            && pip3 install \
+                awscli \
             else
-            echo "AWS CLI already installed"
+            echo "installed AWS CLI"
             fi
       - run:
           name: destroy S3 buckets
