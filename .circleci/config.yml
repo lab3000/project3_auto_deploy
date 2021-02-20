@@ -9,7 +9,7 @@ commands:
           when: on_fail
           command: |
             if ! [ -x "$(command -v aws)" ]; then
-            sudo apt install -y awscli
+            apt install -y awscli
             else
             echo "installed AWS CLI"
             fi
