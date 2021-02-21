@@ -9,31 +9,23 @@ commands:
           when: on_fail
           command: |
             if ! [ -x "$(command -v aws)" ]; then
-            apt install -y awscli
+            pip install awscli
             else
             echo "installed AWS CLI"
             fi
       - run:
-          name: destroy S3 buckets
+          name: destroy environment
           when: on_fail
           command: |
             aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
-      - run:
-          name: destroy backend
-          when: on_fail
-          command: |
             aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:7}
-      - run:
-          name: destroy frontend
-          when: on_fail
-          command: |
             aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:7}
-      - run:
-          name: Destroy Promotion Stack
-          when: on_fail
-          command: |
-            aws cloudformation delete-stack --stack-name udapeople-cloudfront
+      # - run:
+      #     name: Destroy Promotion Stack
+      #     when: on_fail
+      #     command: |
+      #       aws cloudformation delete-stack --stack-name udapeople-cloudfront
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.  
@@ -325,7 +317,7 @@ jobs:
 
   smoke-test:
     docker:
-      - image: alpine:latest 
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - run:
