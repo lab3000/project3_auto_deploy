@@ -25,7 +25,7 @@ commands:
       #     name: Destroy Promotion Stack
       #     when: on_fail
       #     command: |
-      #       aws cloudformation delete-stack --stack-name udapeople-cloudfront
+      #       aws cloudformation delete-stack --stack-name udapeople-cloudfront_
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.  
