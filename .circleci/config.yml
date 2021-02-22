@@ -358,10 +358,16 @@ jobs:
           name: update cloudfront distribution
           command: |
             OldWorkflowId=$(curl -H "token: gemlcj9dt2p49xv" --request GET "https://api.memstash.io/values/udapeople_active_workflowid_gemlcj9dt2p49xv")
-            echo $BACKEND_IP
-            
             echo OldWorkflowId prefix: ${OldWorkflowId:0:7}
-
+            if $OldWorkflowId | grep "No value"
+            then
+              echo first deploy - nothing to destroy
+            else
+              aws s3 rm s3://udapeople-${OldWorkflowId:0:7}/ --recursive
+              aws cloudformation delete-stack --stack-name udacity-frontend-${OldWorkflowId:0:7}
+              aws cloudformation delete-stack --stack-name udacity-backend-${OldWorkflowId:0:7}
+            fi
+             
             aws cloudformation deploy \
                 --template-file .circleci/cloudfront.yml \
                 --tags project=udapeople \
@@ -369,10 +375,6 @@ jobs:
                 --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"
             
             curl -H "Content-Type: text/plain" -H "token: gemlcj9dt2p49xv" --request PUT --data "${CIRCLE_WORKFLOW_ID}" https://api.memstash.io/values/udapeople_active_workflowid_gemlcj9dt2p49xv
-
-            aws s3 rm s3://udapeople-${OldWorkflowId:0:7}/ --recursive
-            aws cloudformation delete-stack --stack-name udacity-frontend-${OldWorkflowId:0:7}
-            aws cloudformation delete-stack --stack-name udacity-backend-${OldWorkflowId:0:7}
 
       - destroy-environment
       - revert-migrations
