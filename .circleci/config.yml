@@ -95,7 +95,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git_
+      # Checkout code from git
       - checkout
       # Restore from cache
       - restore_cache:
@@ -360,7 +360,7 @@ jobs:
             OldWorkflowId=$(curl -H "token: gemlcj9dt2p49xv" --request GET "https://api.memstash.io/values/udapeople_active_workflowid_gemlcj9dt2p49xv")
             echo $BACKEND_IP
             
-            echo OldWorkflowId: ${OldWorkflowId}
+            echo OldWorkflowId prefix: ${OldWorkflowId:0:7}
 
             aws cloudformation deploy \
                 --template-file .circleci/cloudfront.yml \
