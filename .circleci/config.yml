@@ -359,7 +359,7 @@ jobs:
           command: |
             OldWorkflowId=$(curl -H "token: gemlcj9dt2p49xv" --request GET "https://api.memstash.io/values/udapeople_active_workflowid_gemlcj9dt2p49xv")
             echo OldWorkflowId prefix: ${OldWorkflowId:0:7}
-            if $OldWorkflowId | grep "No value"
+            if $OldWorkflowId | grep "No valu"
             then
               echo first deploy - nothing to destroy
             else
