@@ -343,7 +343,7 @@ jobs:
       - revert-migrations
       - destroy-environment
 
-  cloudfront-update:
+  cloudfront-update-and-cleanup:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -355,7 +355,7 @@ jobs:
             curl -sL https://rpm.nodesource.com/setup_10.x | bash -
             yum install -y nodejs
       - run:
-          name: update cloudfront distribution
+          name: cloudfront update and cleanup
           command: |
             OldWorkflowId=$(curl -H "token: gemlcj9dt2p49xv" --request GET "https://api.memstash.io/values/udapeople_active_workflowid_gemlcj9dt2p49xv")
             echo OldWorkflowId prefix: ${OldWorkflowId}
@@ -394,13 +394,37 @@ workflows:
           requires: [build-frontend]
       - deploy-infrastructure:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only:
+                - master
       - configure-infrastructure-and-deploy-backend:
           requires: [deploy-infrastructure]
+          filters:
+            branches:
+              only:
+                - master
       - run-migrations:
           requires: [configure-infrastructure-and-deploy-backend]
+          filters:
+            branches:
+              only:
+                - master
       - deploy-frontend:
           requires: [run-migrations]
+          filters:
+            branches:
+              only:
+                - master
       - smoke-test:
           requires: [configure-infrastructure-and-deploy-backend, deploy-frontend]
-      - cloudfront-update:
+          filters:
+            branches:
+              only:
+                - master
+      - cloudfront-update-and-cleanup:
           requires: [smoke-test]
+          filters:
+            branches:
+              only:
+                - master
