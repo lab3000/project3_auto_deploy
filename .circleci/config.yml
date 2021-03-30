@@ -74,7 +74,7 @@ jobs:
              # Your code here
              cd backend
              npm i
-             npm run build
+             npmrun build
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
